@@ -30,6 +30,13 @@
             {
               "client_id": "252449757707-b91jcqfqspsi7hjjgvee7lvnu0eup4u3.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "252449757707-1fvt84u9afnjnkpr8bt5tcnqrrb00u82.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.epitech.animeFlutterApp"
+              }
             }
           ]
         }
