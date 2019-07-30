@@ -21,53 +21,47 @@ class Home extends StatelessWidget {
           switch (snapshot.connectionState) {
             case ConnectionState.waiting: return Text('Loading...');
             default:
-              return new ListView(
-                children:
-                  snapshot.data.documents.map((DocumentSnapshot document){
-                    return new Card(
-                      elevation: 5,
-                      child: Container(
-                        height: 50.0,
-                        child: Row(
-                          children: <Widget>[
-                            Container(
-                              height: 100.0,
-                              width: 50.0,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.only(
-                                  bottomLeft: Radius.circular(5),
-                                  topLeft: Radius.circular(5)
+              return new GridView.count(
+                  crossAxisCount: 2,
+                  padding: EdgeInsets.all(10.0),
+                  children:
+                    snapshot.data.documents.map((DocumentSnapshot document) {
+                      return Container(
+                        width: 200.0,
+                        height: 250.0,
+                        child: InkWell(
+                          onTap: () {},
+                          child: Card(
+                            child: Column(
+                              children: <Widget>[
+                                Image.network(document['url'] != null ? document['url'] : '',
+                                  width: double.infinity,
+                                  height: 120,
+                                  fit: BoxFit.cover,
                                 ),
-                                image: DecorationImage(
-                                    fit: BoxFit.cover,
-                                    image: NetworkImage("http://www.boruto-vostfr.com/Images/arc-5")
-                                )
-                              ),
-                            ),
-                            Container(
-                              height: 100.0,
-                              child: Padding(
-                                padding: EdgeInsets.fromLTRB(10, 2, 0, 0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text(document['name']),
-                                    Container(
-                                      width: 30,
-                                      decoration: BoxDecoration(
-                                        border: Border.all(color: Colors.teal),
-                                        borderRadius: BorderRadius.all(Radius.circular(10))
-                                      ),
-                                    )
-                                  ],
+                                Expanded(
+                                  child: Container(
+                                    padding: EdgeInsets.all(5),
+                                    child: Column(
+                                      children: <Widget>[
+                                        Text(document['name'],
+                                          maxLines: 2,
+                                          style: Theme.of(context).primaryTextTheme.subhead.copyWith(
+                                              color: Colors.blue,
+                                              fontSize: 12
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                              ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }).toList(),
+                          ),
+                        )
+                      );
+                    }).toList()
               );
           }
         },
