@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import 'anime_detail_page.dart';
+
 class Home extends StatelessWidget {
   const Home({Key key, this.user}) : super(key: key);
   final FirebaseUser user;
@@ -19,7 +21,9 @@ class Home extends StatelessWidget {
             return Text('Error ${snapshot.error}');
           }
           switch (snapshot.connectionState) {
-            case ConnectionState.waiting: return Text('Loading...');
+            case ConnectionState.waiting: return Dialog(
+              child: CircularProgressIndicator(),
+            );
             default:
               return new GridView.count(
                   crossAxisCount: 2,
@@ -30,7 +34,9 @@ class Home extends StatelessWidget {
                         width: 200.0,
                         height: 250.0,
                         child: InkWell(
-                          onTap: () {},
+                          onTap: () {
+                            navigateToDetailProduct(context, document.documentID, document['name']);
+                          },
                           child: Card(
                             child: Column(
                               children: <Widget>[
@@ -67,6 +73,10 @@ class Home extends StatelessWidget {
         },
       ),
     );
+  }
+
+  void navigateToDetailProduct(BuildContext context, String id, String name) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => AnimeDetailPage(name: name, id: id)));
   }
 }
 
