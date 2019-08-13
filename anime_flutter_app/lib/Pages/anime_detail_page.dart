@@ -10,81 +10,109 @@ class AnimeDetailPage extends StatefulWidget {
   _AnimeDetailPageState createState() => _AnimeDetailPageState();
 }
 
-class _AnimeDetailPageState extends State<AnimeDetailPage>
-    with SingleTickerProviderStateMixin {
-  TabController _controller;
-
-  List<Tab> _list = [
-    new Tab(
-      icon: const Icon(Icons.list),
-      text: 'Episodes',
-    ),
-    new Tab(
-      icon: const Icon(Icons.description),
-      text: 'Résumé',
-    ),
-  ];
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _controller = new TabController(length: 2, vsync: this);
-  }
-
+class _AnimeDetailPageState extends State<AnimeDetailPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
         appBar: AppBar(
           title: Text(widget.name),
+          bottom: TabBar(
+            isScrollable: false,
+            tabs: choices.map((Choice choice) {
+              return Tab(
+                icon: Icon(choice.icon),
+                text: choice.title,
+              );
+            }).toList(),
+          ),
         ),
-        body: new ListView(
+        body: TabBarView(
           children: <Widget>[
-            new Container(
-              decoration:
-                  new BoxDecoration(color: Theme.of(context).primaryColor),
-              child: new TabBar(
-                controller: _controller,
-                tabs: _list,
-              ),
-            ),
-            new Container(
-              height: 80.0,
-              child: new TabBarView(
-                controller: _controller,
-                children: <Widget>[
-                  new Container(
-                    child: new InkWell(
-                      child: new InkWell(
-                        onTap: () {},
-                        child: new Card(
-                          child: new ListTile(
-                            leading: const Icon(Icons.home),
-                            title: new Text("Episode XX"),
-                            subtitle: new Text("Boruto Uzumaki !"),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  new StreamBuilder<DocumentSnapshot>(
-                    stream: Firestore.instance.collection('anime').document(widget.id).snapshots(),
-                    builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                      if (snapshot.hasError) {
-                        return Text('Error ${snapshot.error}');
-                      }
-                      switch (snapshot.connectionState) {
-                        case ConnectionState.waiting: return Dialog(
+            Container(
+              child: StreamBuilder<DocumentSnapshot>(
+                  stream: Firestore.instance
+                      .collection('anime')
+                      .document(widget.id)
+                      .snapshots(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<DocumentSnapshot> snapshot) {
+                    if (snapshot.hasError) {
+                      return Text('Error ${snapshot.error}');
+                    }
+                    switch (snapshot.connectionState) {
+                      case ConnectionState.waiting:
+                        return Dialog(
                           child: CircularProgressIndicator(),
                         );
-                        default: return Text(snapshot.data['description']);
-                      }
-                    },
-                  ),
-                ],
-              ),
+                      default:
+                        return ListView(
+                          children: <Widget>[
+                            StreamBuilder<DocumentSnapshot>(
+                                stream: Firestore.instance
+                                    .collection('anime')
+                                    .document(widget.id)
+                                    .snapshots(),
+                                builder: (BuildContext context,
+                                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                                  if (snapshot.hasError) {
+                                    return Text('Error ${snapshot.error}');
+                                  }
+                                  switch (snapshot.connectionState) {
+                                    case ConnectionState.waiting:
+                                      return Dialog(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    default:
+                                      return Text("LOL");
+                                  }
+                                }),
+                          ],
+                        );
+                    }
+                  }),
+            ),
+            Container(
+              child: StreamBuilder<DocumentSnapshot>(
+                  stream: Firestore.instance
+                      .collection('anime')
+                      .document(widget.id)
+                      .snapshots(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<DocumentSnapshot> snapshot) {
+                    if (snapshot.hasError) {
+                      return Text('Error ${snapshot.error}');
+                    }
+                    switch (snapshot.connectionState) {
+                      case ConnectionState.waiting:
+                        return Dialog(
+                          child: CircularProgressIndicator(),
+                        );
+                      default:
+                        return Padding(
+                          padding: EdgeInsets.all(10.0),
+                          child: Text(snapshot.data['description'],
+                              style: TextStyle(fontSize: 12)),
+                        );
+                    }
+                  }),
             ),
           ],
-        ));
+        ),
+      ),
+    );
   }
 }
+
+class Choice {
+  const Choice({this.title, this.icon});
+
+  final String title;
+  final IconData icon;
+}
+
+const List<Choice> choices = const <Choice>[
+  const Choice(title: 'Episodes', icon: Icons.list),
+  const Choice(title: 'Résumé', icon: Icons.description),
+];
